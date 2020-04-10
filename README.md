@@ -1,6 +1,6 @@
-# NRF52 Toolchain
+# NRF52 Modularity PoC
 
-This is a toolchain for compilation of code for Nordic NRF52 microcontroller.
+This is a toolchain for compilation of project `nrf52-modularity` for Nordic NRF52 microcontroller.
 
 To build docker image for cross-compilation, use `docker build -t nrf52-toolchain:v0 .`
 

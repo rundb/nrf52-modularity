@@ -8,8 +8,15 @@ PROJ_DIR := /host/base/src/
 $(OUTPUT_DIRECTORY)/nrf52840_xxaa.out: \
   LINKER_SCRIPT  := usbd_cdc_acm_gcc_nrf52.ld
 
+APPLICATION_INCLUDE := \
+  $(PROJ_DIR)/application
+
+APPLICATION_FILES := \
+  $(PROJ_DIR)/application/application.cpp
+
 # Source files common to all targets
 SRC_FILES += \
+  $(APPLICATION_FILES)\
   $(SDK_ROOT)/modules/nrfx/mdk/gcc_startup_nrf52840.S \
   $(SDK_ROOT)/components/libraries/log/src/nrf_log_backend_rtt.c \
   $(SDK_ROOT)/components/libraries/log/src/nrf_log_backend_serial.c \
@@ -76,6 +83,7 @@ SRC_FILES += \
 
 # Include folders common to all targets
 INC_FOLDERS += \
+  $(APPLICATION_INCLUDE) \
   $(SDK_ROOT)/components \
   $(SDK_ROOT)/components/libraries/cli \
   $(SDK_ROOT)/modules/nrfx/mdk \
@@ -89,7 +97,6 @@ INC_FOLDERS += \
   $(SDK_ROOT)/components/libraries/timer \
   $(SDK_ROOT)/components/libraries/util \
   $(SDK_ROOT)/components/libraries/bsp \
-  ../config \
   $(SDK_ROOT)/components/libraries/usbd/class/cdc \
   $(SDK_ROOT)/components/libraries/balloc \
   $(SDK_ROOT)/components/libraries/ringbuf \
@@ -125,7 +132,7 @@ INC_FOLDERS += \
 LIB_FILES += \
 
 # Optimization flags
-OPT = -O3 -g3
+OPT = -O2 -g3
 # Uncomment the line below to enable link time optimization
 #OPT += -flto
 

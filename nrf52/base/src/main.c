@@ -287,6 +287,10 @@ static void init_cli(void)
 }
 #endif
 
+
+extern void application_init();
+extern void application_cyclic();
+
 int main(void)
 {
     ret_code_t ret;
@@ -338,6 +342,8 @@ int main(void)
         app_usbd_start();
     }
 
+    application_init();
+
     while (true)
     {
         while (app_usbd_event_queue_process())
@@ -361,7 +367,7 @@ int main(void)
 #if NRF_CLI_ENABLED
         nrf_cli_process(&m_cli_uart);
 #endif
-
+        application_cyclic();
         UNUSED_RETURN_VALUE(NRF_LOG_PROCESS());
         /* Sleep CPU only if there was no interrupt since last loop processing */
         __WFE();
