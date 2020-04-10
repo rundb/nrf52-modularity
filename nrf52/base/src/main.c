@@ -66,11 +66,7 @@
 #include "nrf_mpu_lib.h"
 #include "nrf_stack_guard.h"
 
-#if defined(APP_USBD_ENABLED) && APP_USBD_ENABLED
 #define CLI_OVER_USB_CDC_ACM 1
-#else
-#define CLI_OVER_USB_CDC_ACM 0
-#endif
 
 #if CLI_OVER_USB_CDC_ACM
 #include "nrf_cli_cdc_acm.h"
@@ -323,6 +319,7 @@ extern void application_cyclic();
 
 int main(void)
 {
+
     ret_code_t ret;
 
     if (USE_CYCCNT_TIMESTAMP_FOR_LOG)

@@ -20,6 +20,9 @@ public:
     Parser() {}
 
     ReturnCode parseCommand(size_t argc, char **argv);
+private:
+    static const size_t MAX_CHUNK_BUFFER_SIZE = 32U;
+    uint8_t _buffer[MAX_CHUNK_BUFFER_SIZE];
 };
 
 #endif //NRF52_MODULARITY_PARSER_H

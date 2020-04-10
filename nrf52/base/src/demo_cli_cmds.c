@@ -93,6 +93,7 @@ static void cmd_print(nrf_cli_t const * p_cli, size_t argc, char **argv)
     nrf_cli_error(p_cli, "%s: unknown parameter: %s", argv[0], argv[1]);
 }
 
+
 static void cmd_python(nrf_cli_t const * p_cli, size_t argc, char **argv)
 {
     UNUSED_PARAMETER(argc);
