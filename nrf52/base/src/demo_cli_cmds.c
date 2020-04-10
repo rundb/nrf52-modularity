@@ -101,6 +101,19 @@ static void cmd_python(nrf_cli_t const * p_cli, size_t argc, char **argv)
     nrf_cli_error(p_cli, "Nice joke ;)");
 }
 
+extern int application_parse_cmd(size_t argc, char **argv);
+static void cmd_application(nrf_cli_t const * p_cli, size_t argc, char **argv)
+{
+    int result = application_parse_cmd(argc, argv);
+    if (result == 0)
+    {
+        nrf_cli_print(p_cli, "ok");
+    } else
+    {
+        nrf_cli_print(p_cli, "error");
+    }
+}
+
 static void cmd_dynamic(nrf_cli_t const * p_cli, size_t argc, char **argv)
 {
     if ((argc == 1) || nrf_cli_help_requested(p_cli))
@@ -459,6 +472,8 @@ NRF_CLI_CREATE_STATIC_SUBCMD_SET(m_sub_print)
 NRF_CLI_CMD_REGISTER(print, &m_sub_print, "print", cmd_print);
 
 NRF_CLI_CMD_REGISTER(python, NULL, "python", cmd_python);
+
+NRF_CLI_CMD_REGISTER(application, NULL, "application", cmd_application);
 
 NRF_CLI_CREATE_STATIC_SUBCMD_SET(m_sub_counter)
 {

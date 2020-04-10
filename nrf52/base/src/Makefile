@@ -9,10 +9,12 @@ $(OUTPUT_DIRECTORY)/nrf52840_xxaa.out: \
   LINKER_SCRIPT  := cli_gcc_nrf52.ld
 
 APPLICATION_INCLUDE := \
-  $(PROJ_DIR)/application
+  $(PROJ_DIR)/application \
+  $(PROJ_DIR)/parser
 
 APPLICATION_FILES := \
-  $(PROJ_DIR)/application/application.cpp
+  $(PROJ_DIR)/application/application.cpp \
+  $(PROJ_DIR)/parser/parser.cpp
 
 # Source files common to all targets
 SRC_FILES += \
