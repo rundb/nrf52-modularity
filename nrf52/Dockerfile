@@ -42,6 +42,7 @@ RUN rm ${TOOLCHAIN_DESCRIPTOR} && touch ${TOOLCHAIN_DESCRIPTOR} && echo 'GNU_INS
 ENV PATH="${PATH}:/tools/${GCC_FOLDER_NAME}/bin"
 ENV PATH="${PATH}:/tools/cmake/bin"
 
+COPY --from=intermediate /tools ./tools
 
 #/tools/gcc-arm-none-eabi-9-2019-q4-major/bin
 #/tools/s140nrf52701/s140_nrf52_7.0.1_softdevice.hex
