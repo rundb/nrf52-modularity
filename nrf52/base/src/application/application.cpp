@@ -34,20 +34,16 @@ void Application::cyclic()
 Application application;
 
 typedef void (*FooWithoutArgsType)();
-
-void blinkLeds()
-{
-    nrf_gpio_pin_clear(14);
-}
+extern void functionForExecution();
 
 void executeTargetFunction()
 {
-//    memcpy((void *)codeExecMemoryArea, led_code, sizeof(led_code));
-//    uint32_t dataMemoryPtr = (uint32_t) codeExecMemoryArea;
-//    uint32_t ptrOffset = dataMemoryPtr - 0x20000000;
-//    uint32_t codeMemoryPtr = 0x800000 + ptrOffset;
-//    FooWithoutArgsType foo = (FooWithoutArgsType) codeMemoryPtr;
-//    foo();
+    memcpy((void *)codeExecMemoryArea, (uint32_t *)functionForExecution, 0x10);
+    uint32_t dataMemoryPtr = (uint32_t) codeExecMemoryArea;
+    uint32_t ptrOffset = dataMemoryPtr - 0x20000000;
+    uint32_t codeMemoryPtr = 0x800000 + ptrOffset;
+    FooWithoutArgsType foo = (FooWithoutArgsType) codeMemoryPtr;
+    foo();
 }
 
 extern "C" 

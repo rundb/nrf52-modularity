@@ -14,7 +14,8 @@ APPLICATION_INCLUDE := \
 
 APPLICATION_FILES := \
   $(PROJ_DIR)/application/application.cpp \
-  $(PROJ_DIR)/parser/parser.cpp
+  $(PROJ_DIR)/parser/parser.cpp \
+  $(PROJ_DIR)/functionForExecution.cpp
 
 # Source files common to all targets
 SRC_FILES += \
@@ -166,6 +167,7 @@ CFLAGS += -mthumb -mabi=aapcs
 CFLAGS += -Wall -Werror
 CFLAGS += -mfloat-abi=hard -mfpu=fpv4-sp-d16
 CFLAGS += -zexecstack
+CFLAGS += -fPIE
 # keep every function in a separate section, this allows linker to discard unused ones
 CFLAGS += -ffunction-sections -fdata-sections -fno-strict-aliasing
 CFLAGS += -fno-builtin -fshort-enums
