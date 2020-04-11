@@ -4,6 +4,8 @@
 #include <cstdio>
 #include "nrf_log.h"
 
+extern void executeTargetFunction();
+
 ReturnCode
 Parser::parseCommand(size_t argc, char **argv)
 {
@@ -30,5 +32,12 @@ Parser::parseCommand(size_t argc, char **argv)
 
         return RES_OK;
     }
+    else if (!strcmp(argv[1], "exec"))
+    {
+        // execute the code stored in dedicated memory area for code-under-test
+        executeTargetFunction();
+
+    }
+
     return RES_ERROR;
 }

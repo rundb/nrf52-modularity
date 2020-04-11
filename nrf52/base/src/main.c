@@ -314,6 +314,31 @@ uint32_t cyccnt_get(void)
     return DWT->CYCCNT;
 }
 
+void init_led()
+{
+//    nrf_gpio_cfg(
+//            13,
+//            NRF_GPIO_PIN_DIR_OUTPUT,
+//            NRF_GPIO_PIN_INPUT_DISCONNECT,
+//            NRF_GPIO_PIN_NOPULL,
+//            NRF_GPIO_PIN_S0S1,
+//            NRF_GPIO_PIN_NOSENSE);
+    nrf_gpio_cfg(
+            14,
+            NRF_GPIO_PIN_DIR_OUTPUT,
+            NRF_GPIO_PIN_INPUT_DISCONNECT,
+            NRF_GPIO_PIN_NOPULL,
+            NRF_GPIO_PIN_S0S1,
+            NRF_GPIO_PIN_NOSENSE);
+    for (int i = 0; i < 10; ++i)
+    {
+        nrf_gpio_pin_clear(14);
+        for (volatile long int i = 0; i < 500000; ++i);
+        nrf_gpio_pin_set(14);
+        for (volatile long int i = 0; i < 500000; ++i);
+    }
+}
+
 extern void application_init();
 extern void application_cyclic();
 
@@ -321,6 +346,9 @@ int main(void)
 {
 
     ret_code_t ret;
+
+    init_led();
+
 
     if (USE_CYCCNT_TIMESTAMP_FOR_LOG)
     {
