@@ -1,6 +1,11 @@
 #include "nrf_gpio.h"
 
-void functionForExecution()
+#define RAMFUNC_EXECUTION_MEMORY_SIZE       (1024)
+
+uint8_t __attribute__((used, section(".myRamfuncArea"), aligned (32)))
+ramFuncExecutionMemory[RAMFUNC_EXECUTION_MEMORY_SIZE];
+
+__attribute__((used, long_call, section(".myRamfunc")))  void functionForExecution()
 {
-    nrf_gpio_pin_clear(14);
+    __asm__("mov r2, r1;");
 }

@@ -9,9 +9,6 @@ MEMORY
   RAM (rwx) :  ORIGIN = 0x20000000, LENGTH = 0x40000
 }
 
-SECTIONS
-{
-}
 
 SECTIONS
 {
@@ -45,6 +42,20 @@ SECTIONS
   } > RAM
 
 } INSERT AFTER .data;
+
+
+SECTIONS
+{
+    .myRamfunc :
+    {
+      KEEP(*(.myRamfunc))
+    } > RAM
+    .myRamfuncArea :
+    {
+      KEEP(*(.myRamfuncArea))
+    } > RAM
+} INSERT AFTER .data;
+
 
 SECTIONS
 {
@@ -90,5 +101,18 @@ SECTIONS
 
 } INSERT AFTER .text
 
+SECTIONS
+{
+    .mySection :
+    {
+      KEEP(*(.mySection))
+    } > FLASH
+
+    .handmade_veneer :
+    {
+      KEEP(*(.handmade_veneer))
+    } > FLASH
+} INSERT AFTER .text;
 
 INCLUDE "nrf_common.ld"
+

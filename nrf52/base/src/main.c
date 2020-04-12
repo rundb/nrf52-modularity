@@ -316,13 +316,13 @@ uint32_t cyccnt_get(void)
 
 void init_led()
 {
-//    nrf_gpio_cfg(
-//            13,
-//            NRF_GPIO_PIN_DIR_OUTPUT,
-//            NRF_GPIO_PIN_INPUT_DISCONNECT,
-//            NRF_GPIO_PIN_NOPULL,
-//            NRF_GPIO_PIN_S0S1,
-//            NRF_GPIO_PIN_NOSENSE);
+    nrf_gpio_cfg(
+            13,
+            NRF_GPIO_PIN_DIR_OUTPUT,
+            NRF_GPIO_PIN_INPUT_DISCONNECT,
+            NRF_GPIO_PIN_NOPULL,
+            NRF_GPIO_PIN_S0S1,
+            NRF_GPIO_PIN_NOSENSE);
     nrf_gpio_cfg(
             14,
             NRF_GPIO_PIN_DIR_OUTPUT,
@@ -330,13 +330,14 @@ void init_led()
             NRF_GPIO_PIN_NOPULL,
             NRF_GPIO_PIN_S0S1,
             NRF_GPIO_PIN_NOSENSE);
-    for (int i = 0; i < 10; ++i)
+    for (int i = 0; i < 3; ++i)
     {
         nrf_gpio_pin_clear(14);
         for (volatile long int i = 0; i < 500000; ++i);
         nrf_gpio_pin_set(14);
         for (volatile long int i = 0; i < 500000; ++i);
     }
+    nrf_gpio_pin_set(13);
 }
 
 extern void application_init();
@@ -344,7 +345,7 @@ extern void application_cyclic();
 
 int main(void)
 {
-
+    SCB->SHCSR |= (SCB_SHCSR_USGFAULTENA_Msk | SCB_SHCSR_BUSFAULTENA_Msk);
     ret_code_t ret;
 
     init_led();
