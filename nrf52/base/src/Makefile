@@ -15,6 +15,7 @@ APPLICATION_INCLUDE := \
 APPLICATION_FILES := \
   $(PROJ_DIR)/application/application.cpp \
   $(PROJ_DIR)/parser/parser.cpp \
+  $(PROJ_DIR)/executor/executor.cpp \
   $(PROJ_DIR)/functionForExecution.cpp
 
 # Source files common to all targets
@@ -28,7 +29,6 @@ SRC_FILES += \
   $(SDK_ROOT)/components/libraries/log/src/nrf_log_default_backends.c \
   $(SDK_ROOT)/components/libraries/log/src/nrf_log_frontend.c \
   $(SDK_ROOT)/components/libraries/log/src/nrf_log_str_formatter.c \
-  $(SDK_ROOT)/components/boards/boards.c \
   $(SDK_ROOT)/components/libraries/mpu/nrf_mpu_lib.c \
   $(SDK_ROOT)/components/libraries/stack_guard/nrf_stack_guard.c \
   $(SDK_ROOT)/components/libraries/button/app_button.c \
@@ -83,14 +83,16 @@ SRC_FILES += \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_uart.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_uarte.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_usbd.c \
-  $(SDK_ROOT)/components/libraries/bsp/bsp.c \
   $(PROJ_DIR)/demo_cli_cmds.c \
   $(PROJ_DIR)/main.c \
   $(SDK_ROOT)/external/segger_rtt/SEGGER_RTT.c \
   $(SDK_ROOT)/external/segger_rtt/SEGGER_RTT_Syscalls_GCC.c \
   $(SDK_ROOT)/external/segger_rtt/SEGGER_RTT_printf.c \
   $(SDK_ROOT)/modules/nrfx/mdk/system_nrf52840.c \
-  $(SDK_ROOT)/external/utf_converter/utf.c \
+  $(SDK_ROOT)/external/utf_converter/utf.c
+
+#  $(SDK_ROOT)/components/boards/boards.c
+#   $(SDK_ROOT)/components/libraries/bsp/bsp.c
 
 # Include folders common to all targets
 INC_FOLDERS += \

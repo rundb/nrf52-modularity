@@ -48,6 +48,7 @@
 #endif
 // <h> nRF_Core
 
+
 //==========================================================
 // <e> NRF_MPU_LIB_ENABLED - nrf_mpu_lib - Module for MPU
 //==========================================================
@@ -556,7 +557,7 @@
 #endif
 // <o> NRFX_UART0_ENABLED - Enable UART0 instance
 #ifndef NRFX_UART0_ENABLED
-#define NRFX_UART0_ENABLED 0
+#define NRFX_UART0_ENABLED 1
 #endif
 
 // <o> NRFX_UART_DEFAULT_CONFIG_HWFC  - Hardware Flow Control
@@ -1960,7 +1961,7 @@
 
 
 #ifndef NRF_CLI_CDC_ACM_ENABLED
-#define NRF_CLI_CDC_ACM_ENABLED 1
+#define NRF_CLI_CDC_ACM_ENABLED 0
 #endif
 
 // <o> NRF_CLI_CDC_ACM_COMM_INTERFACE - COMM interface number.
@@ -2137,7 +2138,7 @@
 #endif
 // <o> NRF_LOG_BACKEND_UART_TX_PIN - UART TX pin
 #ifndef NRF_LOG_BACKEND_UART_TX_PIN
-#define NRF_LOG_BACKEND_UART_TX_PIN 6
+#define NRF_LOG_BACKEND_UART_TX_PIN 28
 #endif
 
 // <o> NRF_LOG_BACKEND_UART_BAUDRATE  - Default Baudrate
@@ -4439,7 +4440,7 @@
 // <e> NRF_CLI_UART_CONFIG_LOG_ENABLED - Enables logging in the module.
 //==========================================================
 #ifndef NRF_CLI_UART_CONFIG_LOG_ENABLED
-#define NRF_CLI_UART_CONFIG_LOG_ENABLED 0
+#define NRF_CLI_UART_CONFIG_LOG_ENABLED 1
 #endif
 // <o> NRF_CLI_UART_CONFIG_LOG_LEVEL  - Default Severity level
 

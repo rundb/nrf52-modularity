@@ -4,7 +4,6 @@
 #include <cstdio>
 #include "nrf_log.h"
 
-extern void executeTargetFunction();
 
 ReturnCode
 Parser::parseCommand(size_t argc, char **argv)
@@ -16,7 +15,8 @@ Parser::parseCommand(size_t argc, char **argv)
         {
             return RES_ERROR;
         }
-//        uint8_t offset = static_cast<uint8_t>(strtol(argv[2], NULL, 16));
+
+        uint8_t offset = static_cast<uint8_t>(strtol(argv[2], NULL, 16));
         uint8_t size = static_cast<uint8_t>(strtol(argv[3], NULL, 16));
         NRF_LOG_RAW_INFO("size 0x%x\n", size);
         if (size > MAX_CHUNK_BUFFER_SIZE)
@@ -29,14 +29,12 @@ Parser::parseCommand(size_t argc, char **argv)
             _buffer[i] = static_cast<uint8_t>(strtol(tmp, NULL, 16));
         }
         NRF_LOG_RAW_INFO("first 2: rx[0x%x,0x%x]\n", _buffer[0], _buffer[1]);
-
+        _executor.fillExecutionMemory(offset, size, _buffer);
         return RES_OK;
     }
     else if (!strcmp(argv[1], "exec"))
     {
-        // execute the code stored in dedicated memory area for code-under-test
-        executeTargetFunction();
-
+//        functionForExecution();
     }
 
     return RES_ERROR;

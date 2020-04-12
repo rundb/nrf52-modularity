@@ -66,7 +66,7 @@
 #include "nrf_mpu_lib.h"
 #include "nrf_stack_guard.h"
 
-#define CLI_OVER_USB_CDC_ACM 1
+#define CLI_OVER_USB_CDC_ACM 0
 
 #if CLI_OVER_USB_CDC_ACM
 #include "nrf_cli_cdc_acm.h"
@@ -76,6 +76,16 @@
 #include "app_usbd_string_desc.h"
 #include "app_usbd_cdc_acm.h"
 #endif //CLI_OVER_USB_CDC_ACM
+
+
+#ifdef RX_PIN_NUMBER
+#undef RX_PIN_NUMBER
+#endif
+#ifdef TX_PIN_NUMBER
+#undef TX_PIN_NUMBER
+#endif
+#define RX_PIN_NUMBER  29
+#define TX_PIN_NUMBER  28
 
 #if defined(TX_PIN_NUMBER) && defined(RX_PIN_NUMBER)
 #define CLI_OVER_UART 1
@@ -205,8 +215,6 @@ static void cli_start(void)
     APP_ERROR_CHECK(ret);
 #endif
 
-    ret = nrf_cli_start(&m_cli_rtt);
-    APP_ERROR_CHECK(ret);
 }
 
 static void cli_init(void)
@@ -223,12 +231,10 @@ static void cli_init(void)
     uart_config.pseltxd = TX_PIN_NUMBER;
     uart_config.pselrxd = RX_PIN_NUMBER;
     uart_config.hwfc    = NRF_UART_HWFC_DISABLED;
-    ret = nrf_cli_init(&m_cli_uart, &uart_config, true, true, NRF_LOG_SEVERITY_INFO);
+    ret = nrf_cli_init(&m_cli_uart, &uart_config, true, true, NRF_LOG_SEVERITY_WARNING);
     APP_ERROR_CHECK(ret);
 #endif
 
-    ret = nrf_cli_init(&m_cli_rtt, NULL, true, true, NRF_LOG_SEVERITY_INFO);
-    APP_ERROR_CHECK(ret);
 }
 
 
@@ -278,29 +284,6 @@ static void cli_process(void)
 #endif
 
     nrf_cli_process(&m_cli_rtt);
-}
-
-
-static void flashlog_init(void)
-{
-    ret_code_t ret;
-    int32_t backend_id;
-
-    ret = nrf_log_backend_flash_init(&nrf_fstorage_nvmc);
-    APP_ERROR_CHECK(ret);
-#if NRF_LOG_BACKEND_FLASHLOG_ENABLED
-    backend_id = nrf_log_backend_add(&m_flash_log_backend, NRF_LOG_SEVERITY_WARNING);
-    APP_ERROR_CHECK_BOOL(backend_id >= 0);
-
-    nrf_log_backend_enable(&m_flash_log_backend);
-#endif
-
-#if NRF_LOG_BACKEND_CRASHLOG_ENABLED
-    backend_id = nrf_log_backend_add(&m_crash_log_backend, NRF_LOG_SEVERITY_INFO);
-    APP_ERROR_CHECK_BOOL(backend_id >= 0);
-
-    nrf_log_backend_enable(&m_crash_log_backend);
-#endif
 }
 
 static inline void stack_guard_init(void)
@@ -388,7 +371,7 @@ int main(void)
 
     cli_start();
 
-    flashlog_init();
+//    flashlog_init();
 
     stack_guard_init();
 

@@ -2,6 +2,7 @@
 #define NRF52_MODULARITY_PARSER_H
 
 #include "general.h"
+#include "executor/executor.h"
 
 /**
  * This class is inteded to parse data command from the CLI.
@@ -14,13 +15,16 @@
  *       0011223344556677 - 8 bytes of data in hex format,
  *       43c2abef - CRC32 of the data
  */
+class Application;
+
 class Parser
 {
 public:
-    Parser() {}
+    Parser(Executor& executor): _executor(executor) {}
 
     ReturnCode parseCommand(size_t argc, char **argv);
 private:
+    Executor& _executor;
     static const size_t MAX_CHUNK_BUFFER_SIZE = 32U;
     uint8_t _buffer[MAX_CHUNK_BUFFER_SIZE];
 };
