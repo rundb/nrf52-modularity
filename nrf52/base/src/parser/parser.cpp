@@ -34,7 +34,8 @@ Parser::parseCommand(size_t argc, char **argv)
     }
     else if (!strcmp(argv[1], "exec"))
     {
-//        functionForExecution();
+        _executor.executeTestFunction();
+        return RES_OK;
     }
 
     return RES_ERROR;
