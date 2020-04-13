@@ -29,3 +29,17 @@ It is very raw and primitive, it's purpose just to get started with uploading th
 
 Right after usage, Nordic DK attempts to execute the code from the test memory. If it fails, it calls `UsageFault_Handler()`. This handler blinks
 LED1 on the board 10 times and then resets the board. 
+
+## Extract code
+
+A Python utility to extract code of the function from objdump output `python/upload_dump/upload_dump.py`
+
+Usage: `python3 extract_code.py [-h] [-t TOOLING_PREFIX] [-f GCC_FLAGS] [-o OUTPUT] [-c] [-v] source function`.
+
+The utility will extract `function` binary code from `source` with flags `GCC_FLAGS`
+If the `-o` parameter is specified the binary dump will be stored to the file
+To output the code as c array the `-c` switch can be used 
+
+To function the utility requires `TOOLING_PREFIX` prepanded gcc and objdump to be available via PATH.
+
+Example: `python3 extract_code.py -t arm-none-eabi- -f "-mcpu=cortex-m4 -g3 -o0 -fPIC" -o dummy.hex ./main.c dummy`
