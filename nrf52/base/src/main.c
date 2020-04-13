@@ -231,47 +231,11 @@ static void cli_init(void)
     uart_config.pseltxd = TX_PIN_NUMBER;
     uart_config.pselrxd = RX_PIN_NUMBER;
     uart_config.hwfc    = NRF_UART_HWFC_DISABLED;
-    ret = nrf_cli_init(&m_cli_uart, &uart_config, true, true, NRF_LOG_SEVERITY_WARNING);
+    ret = nrf_cli_init(&m_cli_uart, &uart_config, true, false, NRF_LOG_SEVERITY_INFO);
     APP_ERROR_CHECK(ret);
 #endif
 
 }
-
-
-static void usbd_init(void)
-{
-#if CLI_OVER_USB_CDC_ACM
-    ret_code_t ret;
-    static const app_usbd_config_t usbd_config = {
-        .ev_handler = app_usbd_event_execute,
-        .ev_state_proc = usbd_user_ev_handler
-    };
-    ret = app_usbd_init(&usbd_config);
-    APP_ERROR_CHECK(ret);
-
-    app_usbd_class_inst_t const * class_cdc_acm =
-            app_usbd_cdc_acm_class_inst_get(&nrf_cli_cdc_acm);
-    ret = app_usbd_class_append(class_cdc_acm);
-    APP_ERROR_CHECK(ret);
-
-    if (USBD_POWER_DETECTION)
-    {
-        ret = app_usbd_power_events_enable();
-        APP_ERROR_CHECK(ret);
-    }
-    else
-    {
-        NRF_LOG_INFO("No USB power detection enabled\nStarting USB now");
-
-        app_usbd_enable();
-        app_usbd_start();
-    }
-
-    /* Give some time for the host to enumerate and connect to the USB CDC port */
-    nrf_delay_ms(1000);
-#endif
-}
-
 
 static void cli_process(void)
 {
@@ -283,7 +247,7 @@ static void cli_process(void)
     nrf_cli_process(&m_cli_uart);
 #endif
 
-    nrf_cli_process(&m_cli_rtt);
+    // nrf_cli_process(&m_cli_rtt);
 }
 
 static inline void stack_guard_init(void)
@@ -313,14 +277,20 @@ void init_led()
             NRF_GPIO_PIN_NOPULL,
             NRF_GPIO_PIN_S0S1,
             NRF_GPIO_PIN_NOSENSE);
-    for (int i = 0; i < 3; ++i)
-    {
-        nrf_gpio_pin_clear(14);
-        for (volatile long int i = 0; i < 500000; ++i);
-        nrf_gpio_pin_set(14);
-        for (volatile long int i = 0; i < 500000; ++i);
-    }
     nrf_gpio_pin_set(13);
+    nrf_gpio_pin_set(14);
+}
+
+void UsageFault_Handler()
+{
+    for (int i = 0; i < 10; ++i)
+    {
+        nrf_gpio_pin_set(13);
+        for (volatile long int j = 0; j < 500000; ++j);
+        nrf_gpio_pin_clear(13);
+        for (volatile long int j = 0; j < 500000; ++j);
+    }
+    NVIC_SystemReset();
 }
 
 extern void application_init();
@@ -361,13 +331,13 @@ int main(void)
 
     cli_init();
 
-    usbd_init();
+    // usbd_init();
 
-    ret = fds_init();
-    APP_ERROR_CHECK(ret);
+    // ret = fds_init();
+    // APP_ERROR_CHECK(ret);
 
 
-    UNUSED_RETURN_VALUE(nrf_log_config_load());
+    // UNUSED_RETURN_VALUE(nrf_log_config_load());
 
     cli_start();
 

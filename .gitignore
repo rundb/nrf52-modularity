@@ -5,3 +5,5 @@ cmake-build-debug
 .idea
 t32
 nrf52/sdk
+nrf52/gcc
+

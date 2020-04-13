@@ -17,3 +17,15 @@ Build project script: `cd nrf52 && docker run -v $(pwd):/host:cached  nrf52-tool
 
 Flashing is performed this way: `nrfjprog -f nrf52 --program ./nrf52/base/src/_build/nrf52840_xxaa.hex --sectorerase && nrfjprog --reset`
 
+## Upload dump
+
+A small Python tool has been introduce to perform upload of the test dump to the chip. One can find it by path `python/upload_dump/upload_dump.py`
+
+Requirement: library `pyserial` (`pip3 install pyserial`)
+
+Usage: `python3 python/upload_dump/upload_dump.py -p /path/to/tty/PORT -P path/to/binary`.
+
+It is very raw and primitive, it's purpose just to get started with uploading the data and executing it. All further improvements can be done further.
+
+Right after usage, Nordic DK attempts to execute the code from the test memory. If it fails, it calls `UsageFault_Handler()`. This handler blinks
+LED1 on the board 10 times and then resets the board. 

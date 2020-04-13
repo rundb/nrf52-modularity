@@ -18,7 +18,7 @@ Parser::parseCommand(size_t argc, char **argv)
 
         uint8_t offset = static_cast<uint8_t>(strtol(argv[2], NULL, 16));
         uint8_t size = static_cast<uint8_t>(strtol(argv[3], NULL, 16));
-        NRF_LOG_RAW_INFO("size 0x%x\n", size);
+        //NRF_LOG_RAW_INFO("size 0x%x\n", size);
         if (size > MAX_CHUNK_BUFFER_SIZE)
         {
             return RES_ERROR;
@@ -28,7 +28,7 @@ Parser::parseCommand(size_t argc, char **argv)
             char tmp[2] = {argv[4][2 * i], argv[4][2 * i + 1]};
             _buffer[i] = static_cast<uint8_t>(strtol(tmp, NULL, 16));
         }
-        NRF_LOG_RAW_INFO("first 2: rx[0x%x,0x%x]\n", _buffer[0], _buffer[1]);
+        //NRF_LOG_RAW_INFO("first 2: rx[0x%x,0x%x]\n", _buffer[0], _buffer[1]);
         _executor.fillExecutionMemory(offset, size, _buffer);
         return RES_OK;
     }
