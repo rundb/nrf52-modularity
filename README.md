@@ -36,10 +36,12 @@ A Python utility to extract code of the function from objdump output `python/upl
 
 Usage: `python3 extract_code.py [-h] [-t TOOLING_PREFIX] [-f GCC_FLAGS] [-o OUTPUT] [-c] [-v] source function`.
 
-The utility will extract `function` binary code from `source` with flags `GCC_FLAGS`
-If the `-o` parameter is specified the binary dump will be stored to the file
+The utility will extract `function` (first mangled match in case of c++) binary code from `source` compiled with flags `GCC_FLAGS`
+If the `-o` parameter is specified the binary dump will be stored in the file
 To output the code as c array the `-c` switch can be used 
 
 To function the utility requires `TOOLING_PREFIX` prepanded gcc and objdump to be available via PATH.
+As an alternative `TOOLING_PREFIX` can also contain path to the utilities.
+
 
 Example: `python3 extract_code.py -t arm-none-eabi- -f "-mcpu=cortex-m4 -g3 -o0 -fPIC" -o dummy.hex ./main.c dummy`
