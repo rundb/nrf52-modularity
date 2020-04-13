@@ -1,7 +1,7 @@
 
+import re
 import argparse
 import os
-import re
 import subprocess
 import sys
 
@@ -9,13 +9,20 @@ import sys
 def log_e(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
 
-def run_utility(cmd):
-    result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    err_output = result.stderr.decode('utf-8')
-    return result.stdout.decode('utf-8'), err_output if len(result.stderr.decode('utf-8')) > 0 else None
 
-def extract_function_byte_code(function_name, dump):
-    pattern = re.compile('\\d+ <{}>'.format(function_name))
+def run_utility(cmd):
+    result = subprocess.run(cmd, stdout=subprocess.PIPE,
+                            stderr=subprocess.PIPE)
+    err_output = result.stderr.decode('utf-8')
+    return result.stdout.decode('utf-8'), err_output if len(err_output) > 0 else None
+
+
+def extract_function_binary_code(function_name, dump):
+    """
+    Extracts the code of the first function that matches the mangled 'function_name'
+    for c++ or unique function for c
+    """
+    pattern = re.compile('\\d+ <.*{}.*>:'.format(function_name))
     dump_lines = dump.splitlines()
 
     function_header_index = next(
@@ -34,6 +41,7 @@ def extract_function_byte_code(function_name, dump):
                           for i in range(0, len(code_string), 2)])
 
     return byte_code
+
 
 def check_prerequisites(required_utils, source_file, verbose):
     from shutil import which
@@ -73,10 +81,11 @@ def parse_args():
     arg_parser = argparse.ArgumentParser(
         description='Utility to extract binary code')
     arg_parser.add_argument('source', help='c source file to process')
-    arg_parser.add_argument('function', help='function which code to extract')
+    arg_parser.add_argument(
+        'function', help='function which code to extract (currently the first found overload will be used)')
 
     arg_parser.add_argument('-t', '--tooling_prefix',
-                            help='prefix for gnu tooling used to process code', default='')
+                            help='prefix for gnu tooling used to process code (can contain toolchain path)', default='')
 
     arg_parser.add_argument(
         '-f', '--gcc_flags', help='parameters that should be forwarded to gcc', default='')
@@ -113,18 +122,20 @@ if __name__ == '__main__':
         log_e(err)
         exit(1)
 
-    out, err = run_utility([obj_dump, '-dw', '-j', '.text', args.source + '.o'])
+    obj_dump_output, err = run_utility([obj_dump, '-dw', '-j', '.text', args.source + '.o'])
     if err is not None:
         log_e(err)
         exit(1)
 
-    obj_dump_output = out
-    function_dump = extract_function_byte_code(args.function, obj_dump_output)
+    function_dump = extract_function_binary_code(args.function, obj_dump_output)
+    if len(function_dump) == 0:
+        log_e("Error: the code for the specified function was not found")
+        exit(1)   
 
     if args.output is not None:
         with open(args.output, 'wb') as f:
             f.write(bytearray(function_dump))
-    
+
     output = format_dump_as_hex_stream(
         function_dump) if not args.c_array else format_dump_as_c_array(args.function, function_dump)
     print(output)
