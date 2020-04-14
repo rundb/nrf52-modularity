@@ -1,0 +1,80 @@
+From 13b4a3b9b7586776397db08b5b2ec803669aed34 Mon Sep 17 00:00:00 2001
+From: Roman Turkin <roma.turkin@yahoo.com>
+Date: Tue, 14 Apr 2020 22:52:12 +0200
+Subject: [PATCH 1/1] basic upload scenario for nrf52 works end-to-end
+
+---
+ etc/config/c++.defaults.properties |  2 +-
+ lib/base-compiler.js               | 38 ++++++++++++++++--------------
+ 2 files changed, 21 insertions(+), 19 deletions(-)
+
+diff --git a/etc/config/c++.defaults.properties b/etc/config/c++.defaults.properties
+index b95bbcfd..129601d9 100644
+--- a/etc/config/c++.defaults.properties
++++ b/etc/config/c++.defaults.properties
+@@ -20,7 +20,7 @@ compiler.g7.exe=/usr/bin/g++-7
+ compiler.g7.name=g++ 7.x
+ compiler.g8.exe=/usr/bin/g++-8
+ compiler.g8.name=g++ 8.x
+-compiler.gdefault.exe=arm-none-eabi-g++
++compiler.gdefault.exe=arm-none-eabi-gcc
+ compiler.gdefault.name=arm-none-eabi-g++
+ 
+ group.clang.compilers=clang7:clangdefault
+diff --git a/lib/base-compiler.js b/lib/base-compiler.js
+index 3df89681..79beeebb 100644
+--- a/lib/base-compiler.js
++++ b/lib/base-compiler.js
+@@ -504,29 +504,31 @@ class BaseCompiler {
+ 
+     uploadDumpToEvaluationBoard(dumpName) {
+         const uploadScriptPath = "".concat(process.env.NRF52_MODULARITY_PATH).concat("/python/upload_dump/upload_dump.py")
+-        const options = "-p /dev/ttyUSB0 -P ".concat(dumpName);
+-        const spawn = require('child_process').spawn;
+-        const python = spawn('python3', [uploadScriptPath, options])
+-        python.on('close', (code) => {
+-            logger.info("Upload has been complete with code " + code)
+-        })        
++        const portId = "-p/dev/ttyUSB0"
++        const pathToBinary = "-P".concat(dumpName)
++
++        const spawn = require('child_process').spawnSync;
++        const python = spawn('python3', [uploadScriptPath, portId, pathToBinary])
++        
++        var stderrOutput = python.stderr;
++        // logger.info("upload, stdout: " + python.stdout)
++        // logger.info("upload, stderr: " + python.stderr)
+     }
+ 
+     buildExecutableForUpload(dirPath, inputFilename, outputFilename) {
+         const compilationScriptPath = "".concat(process.env.NRF52_MODULARITY_PATH).concat("/python/extract_code/extract_code.py")
+         const options = " -t arm-none-eabi- -f \"-mcpu=cortex-m4 -g3 -o0 -fPIC\" -o ".concat(outputFilename).concat(" ").concat(inputFilename).concat(" dummy")
+-        const spawn = require("child_process").spawn;
+-        const python = spawn('python3', [compilationScriptPath, options])
+-
+-        python.on('close', (code) => {
+-            logger.info("extract_code finished with code " + code)
+-            if (code === 0) {
+-                this.uploadDumpToEvaluationBoard(outputFilename)
+-            }
+-            else {
+-                logger.warn("Binary image for upload generation failed")
+-            }
+-        })
++        const spawn = require("child_process").spawnSync;
++        const python = spawn('python3', 
++            [compilationScriptPath, 
++             "-t", "arm-none-eabi-", 
++             "-f", "-mcpu=cortex-m4 -g3 -o0 -fPIC",
++            "-o",
++            outputFilename,
++            inputFilename,
++            "dummy"])
++
++        this.uploadDumpToEvaluationBoard(outputFilename)
+ 
+         return Object.assign({}, {
+             code: 0,
+-- 
+2.20.1
+

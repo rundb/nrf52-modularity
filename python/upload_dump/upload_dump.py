@@ -6,9 +6,9 @@ import sys
 def validate_binary_image(path_to_binary):
     try:
         image = open(path_to_binary, "rb")
-    except:
-        print("Failed to open new image file. Exit")
-        exit()
+    except Exception as e:
+        print("Failed to open new image file. Exception: " + str(e) + "\r\n.Exit. (" + path_to_binary + ").")
+        exit(-2)
     image_size = len(list(image.read()))
     print("Image size: " + str(image_size) + " bytes")
     image.close()
@@ -20,11 +20,11 @@ def open_serial_port(port, baudrate):
                             inter_byte_timeout=0.1)
     except:
         print("Failed to open serial port. Exit.")
-        exit()
+        exit(-3)
 
     if not ser.isOpen():
         print("Failed to open serial port. Exit")
-        exit()
+        exit(-3)
 
     return ser
 
@@ -48,7 +48,7 @@ def serial_send(ser, data):
             nextSize = len(data[currentIdx:])
         ser.write(data[currentIdx:currentIdx + nextSize].encode('utf-8'))
         currentIdx += nextSize
-        time.sleep(0.1)
+        time.sleep(0.08)
         if nextSize == 0:
             isTransactionComplete = True
 
@@ -111,14 +111,24 @@ def execute_test_code(ser):
 
 
 if __name__ == '__main__':
+    print("Upload tool has started")
     parser = argparse.ArgumentParser(
         description='Tool for uploading executable dump to NRF52-Modularity')
     parser.add_argument('--port', '-p', help='serial port name to open')
     parser.add_argument('--path', '-P', help='path to binary for uploading')
-    args = parser.parse_args()
+    try:
+        args = parser.parse_args()
+    except Exception as e:
+        print("Failed to parse arguments. Exception: " + str(e))
+        print("Exit")
+        exit(-3)
+
     port = vars(args)['port']
     path_to_binary = vars(args)['path']
     baudrate = 115200
+    time.sleep(0.1)
+
+    print("Upload tool: parsing finished")
 
     # check if image exists
     validate_binary_image(path_to_binary)
