@@ -293,6 +293,18 @@ void UsageFault_Handler()
     NVIC_SystemReset();
 }
 
+void BusFault_Handler()
+{
+    for (int i = 0; i < 10; ++i)
+    {
+        nrf_gpio_pin_set(14);
+        for (volatile long int j = 0; j < 500000; ++j);
+        nrf_gpio_pin_clear(14);
+        for (volatile long int j = 0; j < 500000; ++j);
+    }
+    NVIC_SystemReset();
+}
+
 extern void application_init();
 extern void application_cyclic();
 

@@ -8,5 +8,6 @@ volatile const size_t __attribute__((used)) ramFuncExecutionMemorySize =  RAMFUN
 
 __attribute__((used, long_call, section(".myRamfunc")))  void functionForExecution()
 {
-    __asm__("nop;");
+    int num = 1;        
+    int num2 = num * num;
 }

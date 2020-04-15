@@ -72,6 +72,7 @@ def send_chunk_to_target(ser, offset, size, data):
         message_to_send += '%.2X' % byte 
     message_to_send += " "
     message_to_send += '%.2X' % get_checksum(data)
+    print(message_to_send)
     message_to_send += "\r\n"
     serial_send(ser, message_to_send)
 

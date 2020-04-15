@@ -25,7 +25,7 @@ Parser::parseCommand(size_t argc, char **argv)
         }
         for (int i = 0; i < size; i += 1)
         {
-            char tmp[2] = {argv[4][2 * i], argv[4][2 * i + 1]};
+            char tmp[3] = {argv[4][2 * i], argv[4][2 * i + 1], '\0'};
             _buffer[i] = static_cast<uint8_t>(strtol(tmp, NULL, 16));
         }
         //NRF_LOG_RAW_INFO("first 2: rx[0x%x,0x%x]\n", _buffer[0], _buffer[1]);

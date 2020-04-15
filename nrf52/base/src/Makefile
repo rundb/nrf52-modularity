@@ -182,6 +182,7 @@ CXXFLAGS += -Wall -Werror
 CXXFLAGS += -mfloat-abi=hard -mfpu=fpv4-sp-d16
 CXXFLAGS += -mcpu=cortex-m4
 CXXFLAGS += -zexecstack
+CXXFLAGS += -fPIC
 # Assembler flags common to all targets
 ASMFLAGS += -g3
 ASMFLAGS += -mcpu=cortex-m4
