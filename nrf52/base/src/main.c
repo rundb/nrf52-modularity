@@ -277,8 +277,16 @@ void init_led()
             NRF_GPIO_PIN_NOPULL,
             NRF_GPIO_PIN_S0S1,
             NRF_GPIO_PIN_NOSENSE);
+    nrf_gpio_cfg(
+            15,
+            NRF_GPIO_PIN_DIR_OUTPUT,
+            NRF_GPIO_PIN_INPUT_DISCONNECT,
+            NRF_GPIO_PIN_NOPULL,
+            NRF_GPIO_PIN_S0S1,
+            NRF_GPIO_PIN_NOSENSE);
     nrf_gpio_pin_set(13);
     nrf_gpio_pin_set(14);
+    nrf_gpio_pin_set(15);
 }
 
 void UsageFault_Handler()
@@ -303,6 +311,19 @@ void BusFault_Handler()
         for (volatile long int j = 0; j < 500000; ++j);
     }
     NVIC_SystemReset();
+}
+
+void normalReboot()
+{
+    for (int i = 0; i < 10; ++i)
+    {
+        nrf_gpio_pin_set(15);
+        for (volatile long int j = 0; j < 500000; ++j);
+        nrf_gpio_pin_clear(15);
+        for (volatile long int j = 0; j < 500000; ++j);
+    }
+    NVIC_SystemReset();
+
 }
 
 extern void application_init();

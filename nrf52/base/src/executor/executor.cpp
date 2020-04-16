@@ -1,6 +1,8 @@
 #include "executor/executor.h"
 #include <string.h>
 
+extern "C" void normalReboot();
+
 extern uint8_t ramFuncExecutionMemory[];
 extern size_t ramFuncExecutionMemorySize;
 extern void functionForExecution();
@@ -27,4 +29,5 @@ void Executor::fillExecutionMemory(uint32_t offset, size_t size, uint8_t * buffe
 void Executor::executeTestFunction()
 {
     functionForExecution();
+    normalReboot();
 }
