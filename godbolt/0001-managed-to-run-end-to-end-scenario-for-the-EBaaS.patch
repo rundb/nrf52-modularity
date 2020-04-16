@@ -1,0 +1,45 @@
+From 76530fd5e07b9a666e2815e35f21d60a7aeb1cd0 Mon Sep 17 00:00:00 2001
+From: Roman Turkin <roma.turkin@yahoo.com>
+Date: Thu, 16 Apr 2020 20:51:16 +0200
+Subject: [PATCH 1/1] managed to run end-to-end scenario for the EBaaS
+
+---
+ lib/base-compiler.js | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/lib/base-compiler.js b/lib/base-compiler.js
+index 79beeebb..3e8a1a96 100644
+--- a/lib/base-compiler.js
++++ b/lib/base-compiler.js
+@@ -509,8 +509,9 @@ class BaseCompiler {
+ 
+         const spawn = require('child_process').spawnSync;
+         const python = spawn('python3', [uploadScriptPath, portId, pathToBinary])
++        //logger.info("RoTu: path to binary" + pathToBinary)
+         
+-        var stderrOutput = python.stderr;
++        // var stderrOutput = python.stderr;
+         // logger.info("upload, stdout: " + python.stdout)
+         // logger.info("upload, stderr: " + python.stderr)
+     }
+@@ -612,7 +613,7 @@ class BaseCompiler {
+         const compilationResultFilename = "nrf52-compilation-result.json";
+ 
+         const compilationResult = await this.buildExecutableInFolder(key, dirPath);
+-        logger.info("Compilation result: " + compilationResult.code)
++        //logger.info("Compilation result: " + compilationResult.code)
+ 
+         if (compilationResult.code !== 0) {
+             return compilationResult;
+@@ -628,7 +629,7 @@ class BaseCompiler {
+ 
+     async handleExecution(key, executeParameters) {
+         const buildResult = await this.buildAndUploadExecutable(key);
+-        logger.info("NRF52: buildAndUploadExecutable finished with code " + buildResult.code);
++        //logger.info("NRF52: buildAndUploadExecutable finished with code " + buildResult.code);
+         if (buildResult.code !== 0) {
+             return {
+                 code: 0,
+-- 
+2.20.1
+

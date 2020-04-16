@@ -10,7 +10,7 @@ def validate_binary_image(path_to_binary):
         print("Failed to open new image file. Exception: " + str(e) + "\r\n.Exit. (" + path_to_binary + ").")
         exit(-2)
     image_size = len(list(image.read()))
-    print("Image size: " + str(image_size) + " bytes")
+    #print("Image size: " + str(image_size) + " bytes")
     image.close()
 
 def open_serial_port(port, baudrate):
@@ -72,7 +72,6 @@ def send_chunk_to_target(ser, offset, size, data):
         message_to_send += '%.2X' % byte 
     message_to_send += " "
     message_to_send += '%.2X' % get_checksum(data)
-    print(message_to_send)
     message_to_send += "\r\n"
     serial_send(ser, message_to_send)
 
@@ -109,10 +108,12 @@ def execute_test_code(ser):
     ser.reset_input_buffer()
     command = "application exec \r\n"
     serial_send(ser, command)
+    time.sleep(0.5)
+    response = ser.read(200).decode('utf-8')
+    print("nrf52: " + response)
 
 
 if __name__ == '__main__':
-    print("Upload tool has started")
     parser = argparse.ArgumentParser(
         description='Tool for uploading executable dump to NRF52-Modularity')
     parser.add_argument('--port', '-p', help='serial port name to open')
@@ -128,8 +129,6 @@ if __name__ == '__main__':
     path_to_binary = vars(args)['path']
     baudrate = 115200
     time.sleep(0.1)
-
-    print("Upload tool: parsing finished")
 
     # check if image exists
     validate_binary_image(path_to_binary)
