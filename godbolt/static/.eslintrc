@@ -1,0 +1,33 @@
+{
+  "root": true,
+  "extends": "eslint:recommended",
+  "env": {
+    "browser": true,
+    "node": true,
+    "es6": false
+  },
+  "rules": {
+    "eqeqeq": ["error", "smart"],
+    "max-statements": ["error", 50],
+    "max-len": ["error", 120, { "ignoreRegExpLiterals": true }],
+    "strict": ["error", "safe"],
+    "eol-last": ["error", "always"],
+    "semi": ["error", "always"],
+    "indent": ["error", 4, { "SwitchCase": 1 }],
+    "no-control-regex": 0,
+    "space-before-function-paren": ["error", {
+      "anonymous": "always",
+      "named": "never",
+      "asyncArrow": "always"
+    }],
+    "quote-props": ["error", "as-needed"]
+  },
+  "parserOptions": {
+    "ecmaVersion": 5
+  },
+  "globals": {
+    "define": false,
+    "monaco": true,
+    "__webpack_public_path__": true
+  }
+}
