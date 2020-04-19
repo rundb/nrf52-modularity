@@ -1,7 +1,16 @@
 #include "executor/executor.h"
+#include "nrf_log.h"
 #include <string.h>
+#include "nrf_delay.h"
 
-extern "C" void normalReboot();
+// I know, this is ugly, but I didn't find a proper way to print info before a reset
+
+#ifdef NRF_LOG_LEVEL
+#undef NRF_LOG_LEVEL
+#endif 
+#define NRF_LOG_LEVEL   4
+
+extern "C" void normalRebootRequest();
 
 extern uint8_t ramFuncExecutionMemory[];
 extern size_t ramFuncExecutionMemorySize;
@@ -26,8 +35,12 @@ void Executor::fillExecutionMemory(uint32_t offset, size_t size, uint8_t * buffe
     }
 }
 
-void Executor::executeTestFunction()
+void Executor::executeTestFunction(nrf_cli_t const * p_cli)
 {
     functionForExecution();
-    normalReboot();
+    normalRebootRequest();
 }
+
+#ifdef NRF_LOG_LEVEL
+#undef NRF_LOG_LEVEL
+#endif 

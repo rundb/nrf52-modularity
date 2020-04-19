@@ -3,6 +3,7 @@
 
 #include "general.h"
 #include "executor/executor.h"
+#include "nrf_cli.h"
 
 /**
  * This class is inteded to parse data command from the CLI.
@@ -22,7 +23,7 @@ class Parser
 public:
     Parser(Executor& executor): _executor(executor) {}
 
-    ReturnCode parseCommand(size_t argc, char **argv);
+    ReturnCode parseCommand(nrf_cli_t const * p_cli, size_t argc, char **argv);
 private:
     Executor& _executor;
     static const size_t MAX_CHUNK_BUFFER_SIZE = 32U;

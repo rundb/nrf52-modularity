@@ -177,7 +177,7 @@ NRF_CLI_DEF(m_cli_cdc_acm,
 #if CLI_OVER_UART
 NRF_CLI_UART_DEF(m_cli_uart_transport, 0, 64, 16);
 NRF_CLI_DEF(m_cli_uart,
-            "uart_cli:~$ ",
+            ">",
             &m_cli_uart_transport.transport,
             '\r',
             CLI_EXAMPLE_LOG_QUEUE_SIZE);
@@ -313,22 +313,31 @@ void BusFault_Handler()
     NVIC_SystemReset();
 }
 
+volatile static bool _requestSoftwareResetAfterDelay = false;
+void normalRebootRequest() {_requestSoftwareResetAfterDelay = true;}
 void normalReboot()
 {
     for (int i = 0; i < 10; ++i)
     {
         nrf_gpio_pin_set(15);
-        for (volatile long int j = 0; j < 500000; ++j);
+        // for (volatile long int j = 0; j < 500000; ++j);
+        nrf_delay_us(50000);
         nrf_gpio_pin_clear(15);
-        for (volatile long int j = 0; j < 500000; ++j);
+        // for (volatile long int j = 0; j < 500000; ++j);
+        nrf_delay_us(50000);
     }
     NVIC_SystemReset();
-
 }
 
 extern void application_init();
 extern void application_cyclic();
 
+#ifdef NRF_LOG_LEVEL
+#undef NRF_LOG_LEVEL
+#endif 
+#define NRF_LOG_LEVEL   4
+
+static uint32_t softwareResetTimeoutCounter = 1000;
 int main(void)
 {
     SCB->SHCSR |= (SCB_SHCSR_USGFAULTENA_Msk | SCB_SHCSR_BUSFAULTENA_Msk);
@@ -348,6 +357,8 @@ int main(void)
     {
         APP_ERROR_CHECK(NRF_LOG_INIT(app_timer_cnt_get));
     }
+
+    //NRF_LOG_DEFAULT_BACKENDS_INIT();
 
     ret = nrf_drv_clock_init();
     APP_ERROR_CHECK(ret);
@@ -370,16 +381,16 @@ int main(void)
     // APP_ERROR_CHECK(ret);
 
 
-    // UNUSED_RETURN_VALUE(nrf_log_config_load());
+    //UNUSED_RETURN_VALUE(nrf_log_config_load());
 
     cli_start();
 
-//    flashlog_init();
+    //flashlog_init();
 
     stack_guard_init();
 
-    NRF_LOG_RAW_INFO("Command Line Interface example started.\n");
-    NRF_LOG_RAW_INFO("Please press the Tab key to see all available commands.\n");
+    NRF_LOG_INFO("Command Line Interface example started.\n");
+    NRF_LOG_INFO("Please press the Tab key to see all available commands.\n");
 
     application_init();
 
@@ -392,8 +403,16 @@ int main(void)
             /* Nothing to do */
         }
 #endif
+        NRF_LOG_PROCESS();
         cli_process();
         application_cyclic();
+        if (_requestSoftwareResetAfterDelay)
+        {
+            if (--softwareResetTimeoutCounter == 0)
+            {
+                normalReboot();
+            }
+        }
     }
 }
 

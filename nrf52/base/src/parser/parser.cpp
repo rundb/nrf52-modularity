@@ -6,7 +6,7 @@
 
 
 ReturnCode
-Parser::parseCommand(size_t argc, char **argv)
+Parser::parseCommand(nrf_cli_t const * p_cli, size_t argc, char **argv)
 {
     if (!strcmp(argv[1], "data"))
     {
@@ -34,7 +34,8 @@ Parser::parseCommand(size_t argc, char **argv)
     }
     else if (!strcmp(argv[1], "exec"))
     {
-        _executor.executeTestFunction();
+        _executor.executeTestFunction(p_cli);
+        
         return RES_OK;
     }
 

@@ -1,0 +1,180 @@
+From beb08f232c177bd3890f0611e9223f9d213e8cb6 Mon Sep 17 00:00:00 2001
+From: Roman Turkin <roma.turkin@yahoo.com>
+Date: Sun, 19 Apr 2020 16:23:34 +0200
+Subject: [PATCH 1/1] added output pane for messages from HW
+
+---
+ lib/base-compiler.js   | 15 +++++++---
+ static/components.js   |  7 +++++
+ static/main.js         |  3 +-
+ static/panes/output.js | 66 ++++++++++++++++++++++--------------------
+ 4 files changed, 55 insertions(+), 36 deletions(-)
+
+diff --git a/lib/base-compiler.js b/lib/base-compiler.js
+index 79beeebb..e787751d 100644
+--- a/lib/base-compiler.js
++++ b/lib/base-compiler.js
+@@ -511,8 +511,10 @@ class BaseCompiler {
+         const python = spawn('python3', [uploadScriptPath, portId, pathToBinary])
+         
+         var stderrOutput = python.stderr;
+-        // logger.info("upload, stdout: " + python.stdout)
++        var dutOutput = python.stdout
++        logger.info("upload, stdout: " + dutOutput)
+         // logger.info("upload, stderr: " + python.stderr)
++        return dutOutput.toString()
+     }
+ 
+     buildExecutableForUpload(dirPath, inputFilename, outputFilename) {
+@@ -528,13 +530,18 @@ class BaseCompiler {
+             inputFilename,
+             "dummy"])
+ 
+-        this.uploadDumpToEvaluationBoard(outputFilename)
+-
++        var dutOutput = this.uploadDumpToEvaluationBoard(outputFilename)
++        logger.info(dutOutput)
++        if (dutOutput === undefined)
++        {
++            dutOutput = "-"
++        }
+         return Object.assign({}, {
+             code: 0,
+             inputFilename: inputFilename,
+             outputFilename: outputFilename,
+-            executableFilename: "no-executable-file-name"
++            executableFilename: "no-executable-file-name",
++            dutOutput: dutOutput
+         });
+     }
+ 
+diff --git a/static/components.js b/static/components.js
+index 98067f59..8c2656b5 100644
+--- a/static/components.js
++++ b/static/components.js
+@@ -113,6 +113,13 @@ module.exports = {
+             }
+         };
+     },
++    getCrossCompilationOutput: function(id, langId, compilerId) {
++        return {
++            type: 'component',
++            componentName: 'output',
++            componentState: {id: id, lang: langId, compilerId: compilerId }
++        };
++    },
+     getAstView: function () {
+         return {
+             type: 'component',
+diff --git a/static/main.js b/static/main.js
+index cd894a93..f1159883 100644
+--- a/static/main.js
++++ b/static/main.js
+@@ -300,7 +300,8 @@ function start() {
+             type: 'row',
+             content: [
+                 Components.getEditor(1, defaultLangId),
+-                Components.getCompiler(1, defaultLangId)
++                Components.getCompiler(1, defaultLangId),
++                Components.getCrossCompilationOutput(1, defaultLangId, 1)
+             ]
+         }]
+     };
+diff --git a/static/panes/output.js b/static/panes/output.js
+index 2dcb7bbb..c6713e52 100644
+--- a/static/panes/output.js
++++ b/static/panes/output.js
+@@ -42,6 +42,7 @@ function makeAnsiToHtml(color) {
+ 
+ function Output(hub, container, state) {
+     this.container = container;
++    //console.log("ROTU output:".concat(JSON.stringify(state)))
+     this.compilerId = state.compiler;
+     this.editorId = state.editor;
+     this.eventHub = hub.createEventHub();
+@@ -67,6 +68,7 @@ function Output(hub, container, state) {
+         eventCategory: 'OpenViewPane',
+         eventAction: 'Output'
+     });
++
+ }
+ 
+ Output.prototype.initCallbacks = function (state) {
+@@ -138,41 +140,43 @@ Output.prototype.onCompiling = function (compilerId) {
+ };
+ 
+ Output.prototype.onCompileResult = function (id, compiler, result) {
+-    if (id !== this.compilerId) return;
++    console.log("TODO: figure out where goldenLayout.state.compilerId comes from. Until then - hardcode")
++    this.compilerId = id;
++    // if (id !== this.compilerId) return;
+     if (compiler) this.compilerName = compiler.name;
+ 
+     this.contentRoot.empty();
+ 
+-    this.addOutputLines(result);
+-    if (!result.execResult) {
+-        this.add("Compiler returned: " + result.code);
+-    } else {
+-        this.add("ASM generation compiler returned: " + result.code);
+-        this.addOutputLines(result.execResult.buildResult);
+-        this.add("Execution build compiler returned: " + result.execResult.buildResult.code);
+-    }
+-    if (result.execResult && result.execResult.didExecute) {
+-        this.add("Program returned: " + result.execResult.code);
+-        if (result.execResult.stderr.length || result.execResult.stdout.length) {
+-            _.each(result.execResult.stderr, function (obj) {
+-                // Conserve empty lines as they are discarded by ansiToHtml
+-                if (obj.text === "") {
+-                    this.programOutput('<br/>');
+-                } else {
+-                    this.programOutput(this.errorAnsiToHtml.toHtml(obj.text), "red");
+-                }
+-            }, this);
+-
+-            _.each(result.execResult.stdout, function (obj) {
+-                // Conserve empty lines as they are discarded by ansiToHtml
+-                if (obj.text === "") {
+-                    this.programOutput('<br/>');
+-                } else {
+-                    this.programOutput(this.normalAnsiToHtml.toHtml(obj.text));
+-                }
+-            }, this);
+-        }
+-    }
++    this.add(result.execResult.dutOutput)
++    // if (!result.execResult) {
++    //     this.add("Compiler returned: " + result.code);
++    // } else {
++    //     this.add("ASM generation compiler returned: " + result.code);
++    //     this.addOutputLines(result.execResult.buildResult);
++    //     this.add("Execution build compiler returned: " + result.execResult.buildResult.code);
++    // }
++    // if (result.execResult && result.execResult.didExecute) {
++    //     this.add("Program returned: " + result.execResult.code);
++    //     if (result.execResult.stderr.length || result.execResult.stdout.length) {
++    //         _.each(result.execResult.stderr, function (obj) {
++    //             // Conserve empty lines as they are discarded by ansiToHtml
++    //             if (obj.text === "") {
++    //                 this.programOutput('<br/>');
++    //             } else {
++    //                 this.programOutput(this.errorAnsiToHtml.toHtml(obj.text), "red");
++    //             }
++    //         }, this);
++
++    //         _.each(result.execResult.stdout, function (obj) {
++    //             // Conserve empty lines as they are discarded by ansiToHtml
++    //             if (obj.text === "") {
++    //                 this.programOutput('<br/>');
++    //             } else {
++    //                 this.programOutput(this.normalAnsiToHtml.toHtml(obj.text));
++    //             }
++    //         }, this);
++    //     }
++    // }
+     this.setCompileStatus(false);
+     this.updateCompilerName();
+ };
+-- 
+2.20.1
+

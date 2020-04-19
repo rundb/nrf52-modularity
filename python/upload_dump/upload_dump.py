@@ -54,8 +54,10 @@ def serial_send(ser, data):
 
     response = ser.read(len(data)).decode('utf-8')
     response = ser.read(5).decode('utf-8')
-    if not response.find("ok"):
-        print("Bad response: " + response)
+    # if not response.find("ok"):
+    #     print("Bad response: " + response)
+    #print(response)
+    return response
 
 def send_chunk_to_target(ser, offset, size, data):
     message_to_send = "application data "
@@ -106,11 +108,12 @@ def upload_binary(ser, path_to_binary):
 
 def execute_test_code(ser):
     ser.reset_input_buffer()
-    command = "application exec \r\n"
-    serial_send(ser, command)
+    command = "application exec \n"
+    command_response = serial_send(ser, command)
     time.sleep(0.5)
+    print(command_response)
     response = ser.read(200).decode('utf-8')
-    print("nrf52: " + response)
+    print(response)
 
 
 if __name__ == '__main__':
