@@ -45,3 +45,7 @@ As an alternative `TOOLING_PREFIX` can also contain path to the utilities.
 
 
 Example: `python3 extract_code.py -t arm-none-eabi- -f "-mcpu=cortex-m4 -g3 -o0 -fPIC" -o dummy.hex ./main.c dummy`
+
+## Godbolt
+
+A fork from Godbolt repository has been performed to ease installation of the IDE. Fork has happened at revision 0c07215ab421505cc894caa11f342d8466fccc13.

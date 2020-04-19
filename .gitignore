@@ -6,4 +6,6 @@ cmake-build-debug
 t32
 nrf52/sdk
 nrf52/gcc
+godbolt/.node-bin
+godbolt/.npm-updated
 

@@ -70,11 +70,11 @@ run: prereqs webpack  ## Runs the site normally
 	./node_modules/.bin/supervisor -w app.js,lib,etc/config -e 'js|node|properties' --exec $(NODE) $(NODE_ARGS) -- ./app.js $(EXTRA_ARGS)
 
 dev: export NODE_ENV=development
-dev: prereqs install-git-hooks ## Runs the site as a developer; including live reload support and installation of git hooks
+dev: prereqs # Runs the site as a developer; including live reload support and installation of git hooks
 	./node_modules/.bin/supervisor -w app.js,lib,etc/config -e 'js|node|properties' --exec $(NODE) $(NODE_ARGS) -- ./app.js $(EXTRA_ARGS)
 
 debug: export NODE_ENV=development
-debug: prereqs install-git-hooks ## Runs the site as a developer with full debugging; including live reload support and installation of git hooks
+debug: prereqs ## Runs the site as a developer with full debugging; including live reload support and installation of git hooks
 	./node_modules/.bin/supervisor -w app.js,lib,etc/config -e 'js|node|properties' --exec $(NODE) $(NODE_ARGS) -- ./app.js --debug $(EXTRA_ARGS)
 
 HASH := $(shell git rev-parse HEAD)
@@ -95,10 +95,6 @@ travis-dist: dist  ## Creates a distribution as if we were running on travis
 	# External GitHub PRs etc won't have the variable set.
 	@[ -z "$(SENTRY_AUTH_TOKEN)" ] || $(SENTRY) releases new -p compiler-explorer $(TRAVIS_BUILD_NUMBER)
 	@[ -z "$(SENTRY_AUTH_TOKEN)" ] || $(SENTRY) releases set-commits --auto $(TRAVIS_BUILD_NUMBER)
-
-install-git-hooks:  ## Install git hooks that will ensure code is linted and tests are run before allowing a check in
-	ln -sf $(shell pwd)/etc/scripts/pre-commit  $(shell git rev-parse --git-dir)/hooks/pre-commit
-.PHONY: install-git-hooks
 
 changelog:  ## Create the changelog
 	python ./etc/scripts/changelog.py
