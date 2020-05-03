@@ -49,7 +49,7 @@ def serial_send(ser, data):
             nextSize = len(data[currentIdx:])
         ser.write(data[currentIdx:currentIdx + nextSize].encode('utf-8'))
         currentIdx += nextSize
-        time.sleep(0.1)
+        time.sleep(0.005)
         if nextSize == 0:
             isTransactionComplete = True
 
