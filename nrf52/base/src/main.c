@@ -175,7 +175,7 @@ NRF_CLI_DEF(m_cli_cdc_acm,
 #endif //CLI_OVER_USB_CDC_ACM
 
 #if CLI_OVER_UART
-NRF_CLI_UART_DEF(m_cli_uart_transport, 0, 64, 16);
+NRF_CLI_UART_DEF(m_cli_uart_transport, 0, 64, 64);
 NRF_CLI_DEF(m_cli_uart,
             ">",
             &m_cli_uart_transport.transport,
@@ -231,7 +231,7 @@ static void cli_init(void)
     uart_config.pseltxd = TX_PIN_NUMBER;
     uart_config.pselrxd = RX_PIN_NUMBER;
     uart_config.hwfc    = NRF_UART_HWFC_DISABLED;
-    ret = nrf_cli_init(&m_cli_uart, &uart_config, true, false, NRF_LOG_SEVERITY_INFO);
+    ret = nrf_cli_init(&m_cli_uart, &uart_config, false, false, NRF_LOG_SEVERITY_INFO);
     APP_ERROR_CHECK(ret);
 #endif
 
@@ -375,35 +375,14 @@ int main(void)
 
     cli_init();
 
-    // usbd_init();
-
-    // ret = fds_init();
-    // APP_ERROR_CHECK(ret);
-
-
-    //UNUSED_RETURN_VALUE(nrf_log_config_load());
-
     cli_start();
 
-    //flashlog_init();
-
     stack_guard_init();
-
-    NRF_LOG_INFO("Command Line Interface example started.\n");
-    NRF_LOG_INFO("Please press the Tab key to see all available commands.\n");
 
     application_init();
 
     while (true)
     {
-        UNUSED_RETURN_VALUE(NRF_LOG_PROCESS());
-#if CLI_OVER_USB_CDC_ACM && APP_USBD_CONFIG_EVENT_QUEUE_ENABLE
-        while (app_usbd_event_queue_process())
-        {
-            /* Nothing to do */
-        }
-#endif
-        NRF_LOG_PROCESS();
         cli_process();
         application_cyclic();
         if (_requestSoftwareResetAfterDelay)

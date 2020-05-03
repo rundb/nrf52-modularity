@@ -474,7 +474,7 @@ NRF_CLI_CMD_REGISTER(print, &m_sub_print, "print", cmd_print);
 
 NRF_CLI_CMD_REGISTER(python, NULL, "python", cmd_python);
 
-NRF_CLI_CMD_REGISTER(application, NULL, "application", cmd_application);
+NRF_CLI_CMD_REGISTER(app, NULL, "app", cmd_application);
 
 NRF_CLI_CREATE_STATIC_SUBCMD_SET(m_sub_counter)
 {

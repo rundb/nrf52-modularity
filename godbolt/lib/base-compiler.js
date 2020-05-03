@@ -512,7 +512,8 @@ class BaseCompiler {
         
         var stderrOutput = python.stderr;
         var dutOutput = python.stdout
-        logger.info("upload, stdout: " + dutOutput)
+        logger.info(uploadScriptPath.concat(" -p/dev/ttyUSB0 ").concat(pathToBinary))
+        //logger.info("upload, stdout: " + dutOutput)
         // logger.info("upload, stderr: " + python.stderr)
         return dutOutput.toString()
     }
@@ -531,6 +532,8 @@ class BaseCompiler {
             "dummy"])
 
         var dutOutput = this.uploadDumpToEvaluationBoard(outputFilename)
+        logger.info("ROTU: ".concat(inputFilename))
+        logger.info("ROTU: ".concat(outputFilename))
         logger.info(dutOutput)
         if (dutOutput === undefined)
         {

@@ -40,27 +40,27 @@ def serial_send(ser, data):
     isTransactionComplete = False
     currentIdx = 0
     lastIdx = len(data)
+    singleMessageSize = 16
     while not isTransactionComplete:
         nextSize = 0
-        if len(data[currentIdx:]) > 8:
-            nextSize = 8
+        if len(data[currentIdx:]) > singleMessageSize:
+            nextSize = singleMessageSize
         else:
             nextSize = len(data[currentIdx:])
         ser.write(data[currentIdx:currentIdx + nextSize].encode('utf-8'))
         currentIdx += nextSize
-        time.sleep(0.08)
+        time.sleep(0.1)
         if nextSize == 0:
             isTransactionComplete = True
 
     response = ser.read(len(data)).decode('utf-8')
     response = ser.read(5).decode('utf-8')
-    # if not response.find("ok"):
-    #     print("Bad response: " + response)
-    #print(response)
+    if response.find("ok") < 0:
+        print("Bad response: " + response)
     return response
 
 def send_chunk_to_target(ser, offset, size, data):
-    message_to_send = "application data "
+    message_to_send = "app data "
     if offset == 0:
         message_to_send += "00"
     elif offset < 10:
@@ -74,6 +74,7 @@ def send_chunk_to_target(ser, offset, size, data):
         message_to_send += '%.2X' % byte 
     message_to_send += " "
     message_to_send += '%.2X' % get_checksum(data)
+    print(message_to_send)
     message_to_send += "\r\n"
     serial_send(ser, message_to_send)
 
@@ -108,12 +109,11 @@ def upload_binary(ser, path_to_binary):
 
 def execute_test_code(ser):
     ser.reset_input_buffer()
-    command = "application exec \n"
+    command = "app exec \n"
     command_response = serial_send(ser, command)
     time.sleep(0.5)
-    print(command_response)
     response = ser.read(200).decode('utf-8')
-    print(response)
+    print(command_response + response)
 
 
 if __name__ == '__main__':
@@ -130,7 +130,7 @@ if __name__ == '__main__':
 
     port = vars(args)['port']
     path_to_binary = vars(args)['path']
-    baudrate = 115200
+    baudrate = 921600
     time.sleep(0.1)
 
     # check if image exists
@@ -140,8 +140,10 @@ if __name__ == '__main__':
     ser = open_serial_port(port, baudrate)
 
     # upload the binary to the device
+    print("uploading binary")
     upload_binary(ser, path_to_binary)
 
+    print("executing")
     execute_test_code(ser)
 
     ser.close()
