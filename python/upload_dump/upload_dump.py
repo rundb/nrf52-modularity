@@ -41,6 +41,7 @@ def serial_send(ser, data):
     currentIdx = 0
     lastIdx = len(data)
     singleMessageSize = 16
+    uart_symbol_duration = 1.0 / 921600
     while not isTransactionComplete:
         nextSize = 0
         if len(data[currentIdx:]) > singleMessageSize:
@@ -49,12 +50,15 @@ def serial_send(ser, data):
             nextSize = len(data[currentIdx:])
         ser.write(data[currentIdx:currentIdx + nextSize].encode('utf-8'))
         currentIdx += nextSize
-        time.sleep(0.005)
+        # time.sleep(uart_symbol_duration * nextSize * 2)
+        time.sleep(0.1)
         if nextSize == 0:
             isTransactionComplete = True
 
     response = ser.read(len(data)).decode('utf-8')
+    print(response)
     response = ser.read(5).decode('utf-8')
+    # print(response)
     if response.find("ok") < 0:
         print("Bad response: " + response)
     return response
@@ -74,7 +78,6 @@ def send_chunk_to_target(ser, offset, size, data):
         message_to_send += '%.2X' % byte 
     message_to_send += " "
     message_to_send += '%.2X' % get_checksum(data)
-    print(message_to_send)
     message_to_send += "\r\n"
     serial_send(ser, message_to_send)
 
@@ -113,7 +116,7 @@ def execute_test_code(ser):
     command_response = serial_send(ser, command)
     time.sleep(0.5)
     response = ser.read(200).decode('utf-8')
-    print(command_response + response)
+    print((command_response + response).strip()[:-2])
 
 
 if __name__ == '__main__':
@@ -140,10 +143,10 @@ if __name__ == '__main__':
     ser = open_serial_port(port, baudrate)
 
     # upload the binary to the device
-    print("uploading binary")
+    # print("uploading binary")
     upload_binary(ser, path_to_binary)
 
-    print("executing")
+    # print("executing")
     execute_test_code(ser)
 
     ser.close()
